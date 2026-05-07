@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -54,14 +53,14 @@
                 <button onclick="app.startFlashcards()" class="w-full p-6 bg-white rounded-2xl border border-slate-200 shadow-sm hover:border-indigo-400 text-left flex justify-between items-center transition-all active:scale-[0.98]">
                     <div>
                         <div class="font-bold text-lg text-slate-800">플래시카드</div>
-                        <div class="text-slate-400 text-xs font-medium">넘기면서 암기하기</div>
+                        <div class="text-slate-400 text-xs font-medium">넘기면서 암기하기 (3회 반복 시 자동 이동)</div>
                     </div>
                     <i class="fa-solid fa-chevron-right text-indigo-500"></i>
                 </button>
                 <button onclick="app.startQuiz()" class="w-full p-6 bg-white rounded-2xl border border-slate-200 shadow-sm hover:border-indigo-400 text-left flex justify-between items-center transition-all active:scale-[0.98]">
                     <div>
                         <div class="font-bold text-lg text-slate-800">스펠링 퀴즈</div>
-                        <div class="text-slate-400 text-xs font-medium">철자를 맞춰보기</div>
+                        <div class="text-slate-400 text-xs font-medium">철자 배열 및 영영 정의 학습</div>
                     </div>
                     <i class="fa-solid fa-play text-indigo-500"></i>
                 </button>
@@ -74,12 +73,13 @@
                 <span>Progress</span>
                 <span id="flashProgress">1 / 30</span>
             </div>
-            <div class="w-full aspect-[4/5] perspective-1000 relative" onclick="app.flipCard()">
+            <div class="w-full aspect-[4/5] perspective-1000 relative" onclick="app.handleCardClick()">
                 <div id="cardInner" class="w-full h-full transform-style-3d relative cursor-pointer">
                     <!-- 앞면 -->
                     <div class="absolute inset-0 bg-white border border-slate-200 rounded-3xl flex flex-col items-center justify-center p-8 backface-hidden shadow-sm">
                         <span class="text-indigo-600 font-bold text-[10px] mb-4 uppercase tracking-widest">English</span>
                         <h3 id="flashWord" class="text-4xl font-black text-center break-words leading-tight">word</h3>
+                        <span id="flashPron" class="text-lg text-slate-400 font-bold mt-3 tracking-wide">[발음]</span>
                     </div>
                     <!-- 뒷면 -->
                     <div class="absolute inset-0 bg-indigo-600 rounded-3xl flex flex-col items-center justify-center p-8 backface-hidden rotate-y-180 text-white shadow-lg">
@@ -91,7 +91,7 @@
             </div>
             <div class="flex gap-4 w-full">
                 <button id="prevBtn" onclick="app.prevCard()" class="flex-1 p-4 bg-white border border-slate-200 rounded-2xl active:bg-slate-50 transition-colors flex justify-center"><i class="fa-solid fa-chevron-left"></i></button>
-                <button onclick="app.flipCard()" class="flex-[2] p-4 bg-indigo-50 text-indigo-700 font-bold rounded-2xl flex items-center justify-center gap-2 active:bg-indigo-100"><i class="fa-solid fa-rotate"></i> 뒤집기</button>
+                <button onclick="app.handleCardClick()" class="flex-[2] p-4 bg-indigo-50 text-indigo-700 font-bold rounded-2xl flex items-center justify-center gap-2 active:bg-indigo-100"><i class="fa-solid fa-rotate"></i> 뒤집기</button>
                 <button id="nextBtn" onclick="app.nextCard()" class="flex-1 p-4 bg-white border border-slate-200 rounded-2xl active:bg-slate-50 transition-colors flex justify-center"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
         </div>
@@ -99,11 +99,12 @@
         <!-- 퀴즈 화면 -->
         <div id="quizView" class="hidden flex-col items-center animate-fade-in">
             <div class="w-full flex justify-between items-end mb-4">
-                <div class="flex flex-col">
-                    <span class="text-[10px] text-slate-400 font-bold uppercase mb-1">뜻에 맞는 철자를 배열하세요</span>
+                <div class="flex flex-col flex-1 mr-2">
+                    <span class="text-[10px] text-slate-400 font-bold uppercase mb-1">철자를 배열하세요</span>
                     <h3 id="quizMeaning" class="text-3xl font-black tracking-tighter text-slate-800">의미</h3>
+                    <p id="quizEngDef" class="text-[11px] text-slate-500 italic mt-1.5 leading-snug break-keep">영어 설명</p>
                 </div>
-                <div class="flex flex-col items-end">
+                <div class="flex flex-col items-end shrink-0">
                     <span id="quizRemaining" class="text-[10px] font-bold text-slate-400 uppercase">남은 단어: 0</span>
                     <div id="reviewBadge" class="hidden mt-1 bg-orange-100 text-orange-600 text-[10px] font-black px-2 py-0.5 rounded-full border border-orange-200">복습 필요</div>
                 </div>
@@ -135,36 +136,36 @@
         window.prompt = function() { return ""; };
 
         const wordData = [
-            { id: 1, word: 'cosmetic', meaning: '성형의', example: 'cosmetic surgery' },
-            { id: 2, word: 'surgery', meaning: '수술', example: 'heart surgery' },
-            { id: 3, word: 'attractive', meaning: '매력적인', example: 'attractive woman' },
-            { id: 4, word: 'beholder', meaning: '보는 사람', example: 'the eye of the beholder' },
-            { id: 5, word: 'guarantee', meaning: '보장', example: 'quality guarantee' },
-            { id: 6, word: 'botched', meaning: '망쳐버린', example: 'botched surprise party' },
-            { id: 7, word: 'synonymous', meaning: '대명사로 통하는', example: 'synonymous with luxury' },
-            { id: 8, word: 'procedure', meaning: '시술/절차', example: 'medical procedure' },
-            { id: 9, word: 'anesthesia', meaning: '마취', example: 'general anesthesia' },
-            { id: 10, word: 'infection', meaning: '감염', example: 'virus infection' },
-            { id: 11, word: 'microbe', meaning: '미생물', example: 'soil microbe' },
-            { id: 12, word: 'alternative', meaning: '대안', example: 'realistic alternative' },
-            { id: 13, word: 'enhance', meaning: '향상시키다', example: 'enhance quality of life' },
-            { id: 14, word: 'improve', meaning: '개선하다', example: 'improve the service' },
-            { id: 15, word: 'confidence', meaning: '자신감', example: 'lack of confidence' },
-            { id: 16, word: 'phenomenon', meaning: '현상', example: 'global phenomenon' },
-            { id: 17, word: 'reputation', meaning: '평판', example: 'school of good reputation' },
-            { id: 18, word: 'revolutionize', meaning: '혁명적 변화를 가져오다', example: 'revolutionize science' },
-            { id: 19, word: 'fate', meaning: '운명', example: 'tragic fate' },
-            { id: 20, word: 'respectively', meaning: '각각', example: 'come first and second respectively' },
-            { id: 21, word: 'dominate', meaning: '우뚝 솟다/지배하다', example: 'dominate the beach' },
-            { id: 22, word: 'distracting', meaning: '주의를 산만하게 하는', example: 'distracting noise' },
-            { id: 23, word: 'tease', meaning: '놀리다', example: 'tease a classmate' },
-            { id: 24, word: 'combat', meaning: '싸우다/방지하다', example: 'combat a disease' },
-            { id: 25, word: 'tighten', meaning: '꽉 조이다', example: 'tighten the belt' },
-            { id: 26, word: 'injection', meaning: '주사', example: 'flu injection' },
-            { id: 27, word: 'prominent', meaning: '눈에 잘 띄는', example: 'prominent building' },
-            { id: 28, word: 'boost', meaning: '북돋우다', example: 'boost confidence' },
-            { id: 29, word: 'consistent', meaning: '일관된', example: 'consistent effort' },
-            { id: 30, word: 'permanent', meaning: '영구적인', example: 'permanent preservation' }
+            { id: 1, word: 'cosmetic', meaning: '성형의', example: 'cosmetic surgery', engDef: 'improving the outside appearance of someone or something', pronunciation: '코즈메틱' },
+            { id: 2, word: 'surgery', meaning: '수술', example: 'heart surgery', engDef: "a process in which a doctor cuts into someone's body in order to repair or remove a damaged or diseased part", pronunciation: '서저리' },
+            { id: 3, word: 'attractive', meaning: '매력적인', example: 'attractive woman', engDef: 'very pleasing in appearance or sound', pronunciation: '어트랙티브' },
+            { id: 4, word: 'beholder', meaning: '보는 사람', example: 'the eye of the beholder', engDef: 'a person who sees or observes someone or something', pronunciation: '비홀더' },
+            { id: 5, word: 'guarantee', meaning: '보장', example: 'quality guarantee', engDef: 'a promise that something will happen or be done', pronunciation: '개런티' },
+            { id: 6, word: 'botched', meaning: '망쳐버린', example: 'botched surprise party', engDef: 'carried out badly or carelessly', pronunciation: '바치트' },
+            { id: 7, word: 'synonymous', meaning: '대명사로 통하는', example: 'synonymous with luxury', engDef: 'having the same, or nearly the same meaning', pronunciation: '시나너머스' },
+            { id: 8, word: 'procedure', meaning: '시술/절차', example: 'medical procedure', engDef: 'a medical treatment or operation', pronunciation: '프로시저' },
+            { id: 9, word: 'anesthesia', meaning: '마취', example: 'general anesthesia', engDef: 'a loss of sensation, especially pain', pronunciation: '애너스시지어' },
+            { id: 10, word: 'infection', meaning: '감염', example: 'virus infection', engDef: 'the process of causing or getting a disease', pronunciation: '인펙션' },
+            { id: 11, word: 'microbe', meaning: '미생물', example: 'soil microbe', engDef: 'an extremely small living thing that can only be seen with a microscope', pronunciation: '마이크로브' },
+            { id: 12, word: 'alternative', meaning: '대안', example: 'realistic alternative', engDef: 'something you can choose instead of something else', pronunciation: '얼터너티브' },
+            { id: 13, word: 'enhance', meaning: '향상시키다', example: 'enhance quality of life', engDef: 'to improve the quality, amount, or strength of something', pronunciation: '인핸스' },
+            { id: 14, word: 'improve', meaning: '개선하다', example: 'improve the service', engDef: 'to make someone or something better than before', pronunciation: '임프루브' },
+            { id: 15, word: 'confidence', meaning: '자신감', example: 'lack of confidence', engDef: 'a feeling or belief that you can do something well', pronunciation: '컨피던스' },
+            { id: 16, word: 'phenomenon', meaning: '현상', example: 'global phenomenon', engDef: 'an event or situation that can be seen to happen', pronunciation: '피나미넌' },
+            { id: 17, word: 'reputation', meaning: '평판', example: 'school of good reputation', engDef: 'the general opinion that people have about someone or something', pronunciation: '레퓨테이션' },
+            { id: 18, word: 'revolutionize', meaning: '혁명적 변화를 가져오다', example: 'revolutionize science', engDef: 'to completely change the way that something is done', pronunciation: '레볼루셔나이즈' },
+            { id: 19, word: 'fate', meaning: '운명', example: 'tragic fate', engDef: 'a power that is believed to control what happens in the future', pronunciation: '페이트' },
+            { id: 20, word: 'respectively', meaning: '각각', example: 'come first and second respectively', engDef: 'separately or individually and in the order already mentioned', pronunciation: '리스펙티브리' },
+            { id: 21, word: 'dominate', meaning: '우뚝 솟다/지배하다', example: 'dominate the beach', engDef: 'to be the largest or most noticeable object in a place', pronunciation: '다미네이트' },
+            { id: 22, word: 'distracting', meaning: '주의를 산만하게 하는', example: 'distracting noise', engDef: 'taking your attention away from what you are trying to do', pronunciation: '디스트랙팅' },
+            { id: 23, word: 'tease', meaning: '놀리다', example: 'tease a classmate', engDef: 'to laugh at someone and make jokes about them', pronunciation: '티즈' },
+            { id: 24, word: 'combat', meaning: '싸우다/방지하다', example: 'combat a disease', engDef: 'to stop something unpleasant or harmful from happening or from getting worse', pronunciation: '컴뱃' },
+            { id: 25, word: 'tighten', meaning: '꽉 조이다', example: 'tighten the belt', engDef: 'to hold or fix something more securely in position', pronunciation: '타이튼' },
+            { id: 26, word: 'injection', meaning: '주사', example: 'flu injection', engDef: 'the act or process of forcing a liquid medicine or drug into someone or something by using a special needle', pronunciation: '인젝션' },
+            { id: 27, word: 'prominent', meaning: '눈에 잘 띄는', example: 'prominent building', engDef: 'easily noticed or seen', pronunciation: '프라미넌트' },
+            { id: 28, word: 'boost', meaning: '북돋우다', example: 'boost confidence', engDef: 'to help or encourage something to increase or improve', pronunciation: '부스트' },
+            { id: 29, word: 'consistent', meaning: '일관된', example: 'consistent effort', engDef: 'always acting or behaving in the same way', pronunciation: '컨시스턴트' },
+            { id: 30, word: 'permanent', meaning: '영구적인', example: 'permanent preservation', engDef: 'lasting for a long time', pronunciation: '퍼머넌트' }
         ];
 
         const app = {
@@ -172,6 +173,7 @@
                 view: 'home',
                 flashIndex: 0,
                 isFlipped: false,
+                flipCount: 0, // 카드 뒤집기 횟수 추적
                 quizQueue: [],
                 currentQuiz: null,
                 userInput: [],
@@ -191,23 +193,42 @@
             startFlashcards() {
                 this.state.flashIndex = 0;
                 this.state.isFlipped = false;
+                this.state.flipCount = 0;
                 this.renderFlashcard();
                 this.setView('flashcard');
             },
 
-            flipCard() {
-                this.state.isFlipped = !this.state.isFlipped;
-                document.getElementById('cardInner').classList.toggle('rotate-y-180', this.state.isFlipped);
+            // 카드 클릭 처리: 6회(앞-뒤-앞-뒤-앞-뒤) 뒤집은 뒤 다음 클릭 시 이동
+            handleCardClick() {
+                if (this.state.flipCount < 6) {
+                    this.state.flipCount++;
+                    this.state.isFlipped = !this.state.isFlipped;
+                    document.getElementById('cardInner').classList.toggle('rotate-y-180', this.state.isFlipped);
+                } else {
+                    // 3바퀴 완료 후 터치 시 다음 카드로
+                    if (this.state.flashIndex < wordData.length - 1) {
+                        this.nextCard();
+                    } else {
+                        // 마지막 단어면 카운트만 리셋하고 앞면으로
+                        this.state.flipCount = 0;
+                        this.state.isFlipped = false;
+                        document.getElementById('cardInner').classList.remove('rotate-y-180');
+                    }
+                }
             },
 
             renderFlashcard() {
                 const word = wordData[this.state.flashIndex];
                 document.getElementById('flashWord').innerText = word.word;
+                document.getElementById('flashPron').innerText = `[${word.pronunciation}]`;
                 document.getElementById('flashMeaning').innerText = word.meaning;
                 document.getElementById('flashExample').innerText = `"${word.example}"`;
                 document.getElementById('flashProgress').innerText = `${this.state.flashIndex + 1} / ${wordData.length}`;
+                
+                // 초기화
                 document.getElementById('cardInner').classList.remove('rotate-y-180');
                 this.state.isFlipped = false;
+                this.state.flipCount = 0; 
 
                 document.getElementById('prevBtn').disabled = this.state.flashIndex === 0;
                 document.getElementById('nextBtn').disabled = this.state.flashIndex === wordData.length - 1;
@@ -251,6 +272,7 @@
                 const { currentQuiz, userInput, availableChars, quizQueue, wrongCounts } = this.state;
                 
                 document.getElementById('quizMeaning').innerText = currentQuiz.meaning;
+                document.getElementById('quizEngDef').innerText = currentQuiz.engDef;
                 document.getElementById('quizRemaining').innerText = `남은 단어: ${quizQueue.length}`;
                 
                 const penalty = wrongCounts[currentQuiz.id] || 0;
@@ -272,12 +294,23 @@
                     slots.appendChild(slot);
                 });
 
-                // 키패드 렌더링
+                // 유채색 키패드 렌더링
                 const keypad = document.getElementById('keypad');
                 keypad.innerHTML = '';
+                const colors = [
+                    'bg-rose-100 text-rose-700 border-rose-300 hover:bg-rose-200', 
+                    'bg-blue-100 text-blue-700 border-blue-300 hover:bg-blue-200', 
+                    'bg-emerald-100 text-emerald-700 border-emerald-300 hover:bg-emerald-200', 
+                    'bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-200', 
+                    'bg-violet-100 text-violet-700 border-violet-300 hover:bg-violet-200', 
+                    'bg-fuchsia-100 text-fuchsia-700 border-fuchsia-300 hover:bg-fuchsia-200', 
+                    'bg-cyan-100 text-cyan-700 border-cyan-300 hover:bg-cyan-200'
+                ];
+
                 availableChars.forEach((char, idx) => {
                     const btn = document.createElement('button');
-                    btn.className = "w-12 h-12 bg-white border border-slate-200 rounded-xl shadow-sm text-lg font-bold hover:bg-slate-50 active:scale-95 transition-all uppercase";
+                    const colorClass = colors[idx % colors.length];
+                    btn.className = `w-12 h-12 border-2 rounded-xl shadow-sm text-lg font-black hover:scale-105 active:scale-95 transition-all uppercase ${colorClass}`;
                     btn.innerText = char;
                     btn.onclick = () => this.addChar(char, idx);
                     keypad.appendChild(btn);
@@ -334,7 +367,7 @@
                     } else if (!wasCorrect) {
                         this.state.wrongCounts[finishedItem.id] = penalty + 1;
                     }
-                    // 중간에 다시 끼워넣기
+                    // 중간에 다시 끼워넣기 (복습 로직)
                     const pos = Math.min(Math.floor(Math.random() * 3) + 2, this.state.quizQueue.length);
                     this.state.quizQueue.splice(pos, 0, finishedItem);
                 }
@@ -352,5 +385,3 @@
     </script>
 </body>
 </html>
-
-```
