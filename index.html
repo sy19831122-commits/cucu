@@ -1,0 +1,356 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordMaster - 단어 학습 앱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Pretendard', sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+
+        /* 애니메이션 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <div id="app" class="max-w-md mx-auto min-h-screen flex flex-col p-4">
+        <!-- 헤더 -->
+        <header class="flex justify-between items-center py-4 mb-4 border-b border-slate-100">
+            <div class="flex items-center gap-2 text-indigo-600 font-black text-xl cursor-pointer" onclick="app.setView('home')">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>단어장</span>
+            </div>
+            <button id="homeBtn" onclick="app.setView('home')" class="hidden p-2 bg-white rounded-full shadow-sm border border-slate-200 active:scale-95 transition-transform">
+                <i class="fa-solid fa-house text-slate-600"></i>
+            </button>
+        </header>
+
+        <!-- 홈 화면 -->
+        <div id="homeView" class="space-y-6 animate-fade-in">
+            <div class="bg-indigo-600 rounded-3xl p-8 text-white shadow-xl shadow-indigo-100">
+                <h2 class="text-2xl font-bold mb-2">학습 준비 완료</h2>
+                <p class="opacity-80 text-sm">30개의 단어를 마스터해봅시다.</p>
+            </div>
+            <div class="grid gap-4">
+                <button onclick="app.startFlashcards()" class="w-full p-6 bg-white rounded-2xl border border-slate-200 shadow-sm hover:border-indigo-400 text-left flex justify-between items-center transition-all active:scale-[0.98]">
+                    <div>
+                        <div class="font-bold text-lg text-slate-800">플래시카드</div>
+                        <div class="text-slate-400 text-xs font-medium">넘기면서 암기하기</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-indigo-500"></i>
+                </button>
+                <button onclick="app.startQuiz()" class="w-full p-6 bg-white rounded-2xl border border-slate-200 shadow-sm hover:border-indigo-400 text-left flex justify-between items-center transition-all active:scale-[0.98]">
+                    <div>
+                        <div class="font-bold text-lg text-slate-800">스펠링 퀴즈</div>
+                        <div class="text-slate-400 text-xs font-medium">철자를 맞춰보기</div>
+                    </div>
+                    <i class="fa-solid fa-play text-indigo-500"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 플래시카드 화면 -->
+        <div id="flashcardView" class="hidden flex-col items-center gap-6 animate-fade-in">
+            <div class="w-full flex justify-between text-[10px] font-black text-slate-400 px-1 tracking-widest uppercase">
+                <span>Progress</span>
+                <span id="flashProgress">1 / 30</span>
+            </div>
+            <div class="w-full aspect-[4/5] perspective-1000 relative" onclick="app.flipCard()">
+                <div id="cardInner" class="w-full h-full transform-style-3d relative cursor-pointer">
+                    <!-- 앞면 -->
+                    <div class="absolute inset-0 bg-white border border-slate-200 rounded-3xl flex flex-col items-center justify-center p-8 backface-hidden shadow-sm">
+                        <span class="text-indigo-600 font-bold text-[10px] mb-4 uppercase tracking-widest">English</span>
+                        <h3 id="flashWord" class="text-4xl font-black text-center break-words leading-tight">word</h3>
+                    </div>
+                    <!-- 뒷면 -->
+                    <div class="absolute inset-0 bg-indigo-600 rounded-3xl flex flex-col items-center justify-center p-8 backface-hidden rotate-y-180 text-white shadow-lg">
+                        <span class="opacity-60 font-bold text-[10px] mb-4 uppercase tracking-widest">Meaning</span>
+                        <h3 id="flashMeaning" class="text-3xl font-bold text-center mb-4">뜻</h3>
+                        <p id="flashExample" class="text-center opacity-80 italic text-sm font-medium">"example"</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-4 w-full">
+                <button id="prevBtn" onclick="app.prevCard()" class="flex-1 p-4 bg-white border border-slate-200 rounded-2xl active:bg-slate-50 transition-colors flex justify-center"><i class="fa-solid fa-chevron-left"></i></button>
+                <button onclick="app.flipCard()" class="flex-[2] p-4 bg-indigo-50 text-indigo-700 font-bold rounded-2xl flex items-center justify-center gap-2 active:bg-indigo-100"><i class="fa-solid fa-rotate"></i> 뒤집기</button>
+                <button id="nextBtn" onclick="app.nextCard()" class="flex-1 p-4 bg-white border border-slate-200 rounded-2xl active:bg-slate-50 transition-colors flex justify-center"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <!-- 퀴즈 화면 -->
+        <div id="quizView" class="hidden flex-col items-center animate-fade-in">
+            <div class="w-full flex justify-between items-end mb-4">
+                <div class="flex flex-col">
+                    <span class="text-[10px] text-slate-400 font-bold uppercase mb-1">뜻에 맞는 철자를 배열하세요</span>
+                    <h3 id="quizMeaning" class="text-3xl font-black tracking-tighter text-slate-800">의미</h3>
+                </div>
+                <div class="flex flex-col items-end">
+                    <span id="quizRemaining" class="text-[10px] font-bold text-slate-400 uppercase">남은 단어: 0</span>
+                    <div id="reviewBadge" class="hidden mt-1 bg-orange-100 text-orange-600 text-[10px] font-black px-2 py-0.5 rounded-full border border-orange-200">복습 필요</div>
+                </div>
+            </div>
+
+            <div class="w-full h-32 bg-white border border-slate-200 rounded-3xl flex items-center justify-center relative overflow-hidden mb-6 shadow-sm">
+                <!-- 결과 레이어 -->
+                <div id="resultLayer" class="hidden absolute inset-0 text-white flex flex-col items-center justify-center z-10 animate-fade-in">
+                    <i id="resultIcon" class="text-3xl mb-1"></i>
+                    <span id="resultWord" class="text-2xl font-black uppercase tracking-tight"></span>
+                </div>
+                
+                <div id="slots" class="flex gap-1"></div>
+            </div>
+
+            <div id="keypad" class="flex flex-wrap gap-2 justify-center mb-8"></div>
+
+            <div class="flex gap-4 w-full">
+                <button onclick="app.undoChar()" class="flex-1 p-4 bg-slate-200 text-slate-600 font-bold rounded-2xl flex items-center justify-center gap-2 active:bg-slate-300"><i class="fa-solid fa-arrow-rotate-left"></i> 지우기</button>
+                <button id="checkBtn" onclick="app.checkAnswer()" class="flex-[2] p-4 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 disabled:bg-slate-300 disabled:shadow-none transition-all active:scale-95">정답 확인</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 에러 방지: 브라우저 내장 알림 차단
+        window.alert = function() { console.log("Alert blocked"); };
+        window.confirm = function() { return true; };
+        window.prompt = function() { return ""; };
+
+        const wordData = [
+            { id: 1, word: 'cosmetic', meaning: '성형의', example: 'cosmetic surgery' },
+            { id: 2, word: 'surgery', meaning: '수술', example: 'heart surgery' },
+            { id: 3, word: 'attractive', meaning: '매력적인', example: 'attractive woman' },
+            { id: 4, word: 'beholder', meaning: '보는 사람', example: 'the eye of the beholder' },
+            { id: 5, word: 'guarantee', meaning: '보장', example: 'quality guarantee' },
+            { id: 6, word: 'botched', meaning: '망쳐버린', example: 'botched surprise party' },
+            { id: 7, word: 'synonymous', meaning: '대명사로 통하는', example: 'synonymous with luxury' },
+            { id: 8, word: 'procedure', meaning: '시술/절차', example: 'medical procedure' },
+            { id: 9, word: 'anesthesia', meaning: '마취', example: 'general anesthesia' },
+            { id: 10, word: 'infection', meaning: '감염', example: 'virus infection' },
+            { id: 11, word: 'microbe', meaning: '미생물', example: 'soil microbe' },
+            { id: 12, word: 'alternative', meaning: '대안', example: 'realistic alternative' },
+            { id: 13, word: 'enhance', meaning: '향상시키다', example: 'enhance quality of life' },
+            { id: 14, word: 'improve', meaning: '개선하다', example: 'improve the service' },
+            { id: 15, word: 'confidence', meaning: '자신감', example: 'lack of confidence' },
+            { id: 16, word: 'phenomenon', meaning: '현상', example: 'global phenomenon' },
+            { id: 17, word: 'reputation', meaning: '평판', example: 'school of good reputation' },
+            { id: 18, word: 'revolutionize', meaning: '혁명적 변화를 가져오다', example: 'revolutionize science' },
+            { id: 19, word: 'fate', meaning: '운명', example: 'tragic fate' },
+            { id: 20, word: 'respectively', meaning: '각각', example: 'come first and second respectively' },
+            { id: 21, word: 'dominate', meaning: '우뚝 솟다/지배하다', example: 'dominate the beach' },
+            { id: 22, word: 'distracting', meaning: '주의를 산만하게 하는', example: 'distracting noise' },
+            { id: 23, word: 'tease', meaning: '놀리다', example: 'tease a classmate' },
+            { id: 24, word: 'combat', meaning: '싸우다/방지하다', example: 'combat a disease' },
+            { id: 25, word: 'tighten', meaning: '꽉 조이다', example: 'tighten the belt' },
+            { id: 26, word: 'injection', meaning: '주사', example: 'flu injection' },
+            { id: 27, word: 'prominent', meaning: '눈에 잘 띄는', example: 'prominent building' },
+            { id: 28, word: 'boost', meaning: '북돋우다', example: 'boost confidence' },
+            { id: 29, word: 'consistent', meaning: '일관된', example: 'consistent effort' },
+            { id: 30, word: 'permanent', meaning: '영구적인', example: 'permanent preservation' }
+        ];
+
+        const app = {
+            state: {
+                view: 'home',
+                flashIndex: 0,
+                isFlipped: false,
+                quizQueue: [],
+                currentQuiz: null,
+                userInput: [],
+                availableChars: [],
+                wrongCounts: {},
+                isWaiting: false
+            },
+
+            setView(viewName) {
+                this.state.view = viewName;
+                document.getElementById('homeView').classList.toggle('hidden', viewName !== 'home');
+                document.getElementById('flashcardView').classList.toggle('hidden', viewName !== 'flashcard');
+                document.getElementById('quizView').classList.toggle('hidden', viewName !== 'quiz');
+                document.getElementById('homeBtn').classList.toggle('hidden', viewName === 'home');
+            },
+
+            startFlashcards() {
+                this.state.flashIndex = 0;
+                this.state.isFlipped = false;
+                this.renderFlashcard();
+                this.setView('flashcard');
+            },
+
+            flipCard() {
+                this.state.isFlipped = !this.state.isFlipped;
+                document.getElementById('cardInner').classList.toggle('rotate-y-180', this.state.isFlipped);
+            },
+
+            renderFlashcard() {
+                const word = wordData[this.state.flashIndex];
+                document.getElementById('flashWord').innerText = word.word;
+                document.getElementById('flashMeaning').innerText = word.meaning;
+                document.getElementById('flashExample').innerText = `"${word.example}"`;
+                document.getElementById('flashProgress').innerText = `${this.state.flashIndex + 1} / ${wordData.length}`;
+                document.getElementById('cardInner').classList.remove('rotate-y-180');
+                this.state.isFlipped = false;
+
+                document.getElementById('prevBtn').disabled = this.state.flashIndex === 0;
+                document.getElementById('nextBtn').disabled = this.state.flashIndex === wordData.length - 1;
+                document.getElementById('prevBtn').classList.toggle('opacity-20', this.state.flashIndex === 0);
+                document.getElementById('nextBtn').classList.toggle('opacity-20', this.state.flashIndex === wordData.length - 1);
+            },
+
+            prevCard() {
+                if (this.state.flashIndex > 0) {
+                    this.state.flashIndex--;
+                    this.renderFlashcard();
+                }
+            },
+
+            nextCard() {
+                if (this.state.flashIndex < wordData.length - 1) {
+                    this.state.flashIndex++;
+                    this.renderFlashcard();
+                }
+            },
+
+            startQuiz() {
+                this.state.quizQueue = [...wordData].sort(() => Math.random() - 0.5);
+                this.state.wrongCounts = {};
+                this.setupQuiz(this.state.quizQueue[0]);
+                this.setView('quiz');
+            },
+
+            setupQuiz(wordObj) {
+                if (!wordObj) return;
+                this.state.currentQuiz = wordObj;
+                const chars = wordObj.word.split('');
+                this.state.userInput = [chars[0]]; // 첫 글자 힌트
+                this.state.availableChars = chars.slice(1).sort(() => Math.random() - 0.5);
+                this.state.isWaiting = false;
+                
+                this.renderQuiz();
+            },
+
+            renderQuiz() {
+                const { currentQuiz, userInput, availableChars, quizQueue, wrongCounts } = this.state;
+                
+                document.getElementById('quizMeaning').innerText = currentQuiz.meaning;
+                document.getElementById('quizRemaining').innerText = `남은 단어: ${quizQueue.length}`;
+                
+                const penalty = wrongCounts[currentQuiz.id] || 0;
+                const badge = document.getElementById('reviewBadge');
+                if (penalty > 0) {
+                    badge.innerText = `복습 필요 (${penalty})`;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+
+                // 입력 칸 렌더링
+                const slots = document.getElementById('slots');
+                slots.innerHTML = '';
+                currentQuiz.word.split('').forEach((char, i) => {
+                    const slot = document.createElement('div');
+                    slot.className = `w-8 h-10 border-b-4 flex items-center justify-center text-xl font-black uppercase ${i < userInput.length ? 'border-indigo-500 text-slate-800' : 'border-slate-200 text-transparent'}`;
+                    slot.innerText = i < userInput.length ? userInput[i] : '_';
+                    slots.appendChild(slot);
+                });
+
+                // 키패드 렌더링
+                const keypad = document.getElementById('keypad');
+                keypad.innerHTML = '';
+                availableChars.forEach((char, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-12 h-12 bg-white border border-slate-200 rounded-xl shadow-sm text-lg font-bold hover:bg-slate-50 active:scale-95 transition-all uppercase";
+                    btn.innerText = char;
+                    btn.onclick = () => this.addChar(char, idx);
+                    keypad.appendChild(btn);
+                });
+
+                const checkBtn = document.getElementById('checkBtn');
+                checkBtn.disabled = userInput.length !== currentQuiz.word.length;
+                
+                document.getElementById('resultLayer').classList.add('hidden');
+            },
+
+            addChar(char, idx) {
+                if (this.state.isWaiting) return;
+                this.state.availableChars.splice(idx, 1);
+                this.state.userInput.push(char);
+                this.renderQuiz();
+            },
+
+            undoChar() {
+                if (this.state.userInput.length <= 1 || this.state.isWaiting) return;
+                const char = this.state.userInput.pop();
+                this.state.availableChars.push(char);
+                this.state.availableChars.sort(() => Math.random() - 0.5);
+                this.renderQuiz();
+            },
+
+            checkAnswer() {
+                if (this.state.isWaiting) return;
+                this.state.isWaiting = true;
+                
+                const resultLayer = document.getElementById('resultLayer');
+                const resultIcon = document.getElementById('resultIcon');
+                const resultWord = document.getElementById('resultWord');
+                const finalWord = this.state.userInput.join('');
+                const isCorrect = finalWord === this.state.currentQuiz.word;
+
+                resultLayer.classList.remove('hidden', 'bg-emerald-500', 'bg-rose-500');
+                resultLayer.classList.add(isCorrect ? 'bg-emerald-500' : 'bg-rose-500');
+                resultIcon.className = isCorrect ? 'fa-solid fa-circle-check text-3xl mb-1' : 'fa-solid fa-circle-xmark text-3xl mb-1';
+                resultWord.innerText = isCorrect ? this.state.currentQuiz.word : `정답: ${this.state.currentQuiz.word}`;
+
+                setTimeout(() => {
+                    this.proceedNext(isCorrect);
+                }, isCorrect ? 1000 : 1800);
+            },
+
+            proceedNext(wasCorrect) {
+                const finishedItem = this.state.quizQueue.shift();
+                const penalty = this.state.wrongCounts[finishedItem.id] || 0;
+
+                if (!wasCorrect || penalty > 0) {
+                    if (wasCorrect && penalty > 0) {
+                        this.state.wrongCounts[finishedItem.id] = penalty - 1;
+                    } else if (!wasCorrect) {
+                        this.state.wrongCounts[finishedItem.id] = penalty + 1;
+                    }
+                    // 중간에 다시 끼워넣기
+                    const pos = Math.min(Math.floor(Math.random() * 3) + 2, this.state.quizQueue.length);
+                    this.state.quizQueue.splice(pos, 0, finishedItem);
+                }
+
+                if (this.state.quizQueue.length > 0) {
+                    this.setupQuiz(this.state.quizQueue[0]);
+                } else {
+                    this.setView('home');
+                }
+            }
+        };
+
+        // 초기 화면 설정
+        window.onload = () => app.setView('home');
+    </script>
+</body>
+</html>
+
+```
