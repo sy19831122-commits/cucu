@@ -3,61 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lesson 10 완전 학습 단어장</title>
+    <title>Lesson 10 단어장</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Pretendard:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
         
-        :root {
-            --primary-pastel: #FFDEE9;
-            --secondary-pastel: #B5FFFC;
-            --study-bg: #fff5f8;
-            --quiz-bg: #f0f7ff;
-            --choice-bg: #f5fff0;
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
 
-        body { 
-            font-family: 'Pretendard', sans-serif; 
-            background: linear-gradient(135deg, var(--primary-pastel) 0%, var(--secondary-pastel) 100%);
+        .main-container {
+            width: 100%;
+            max-width: 500px;
+            background: #ffffff;
             min-height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-            margin: 0;
-            touch-action: manipulation;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
 
-        .cute-title {
-            font-family: 'Gaegu', cursive;
-            text-shadow: 2px 2px 0px rgba(255,255,255,0.8);
+        /* 가독성을 높이기 위한 선명한 텍스트 스타일 */
+        .word-text {
+            color: #1a1a1a;
+            font-weight: 900;
+            line-height: 1.2;
         }
 
-        /* Bubble Style Containers */
-        .bubble-container {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(12px);
-            border-radius: 2.5rem;
-            border: 6px solid white;
-            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.08);
+        .meaning-text {
+            color: #2563eb;
+            font-weight: 700;
+        }
+
+        /* 카드 플립 애니메이션 */
+        .card-container {
+            perspective: 1000px;
+            height: 350px;
             width: 100%;
-            max-width: 450px;
-            padding: 2rem;
-            position: relative;
         }
 
-        /* Card Design */
-        .word-card { perspective: 1000px; margin-bottom: 2rem; }
         .card-inner {
             position: relative;
             width: 100%;
-            height: 300px;
+            height: 100%;
             text-align: center;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.6s;
             transform-style: preserve-3d;
             cursor: pointer;
         }
-        .card-inner.is-flipped { transform: rotateY(180deg); }
+
+        .card-inner.is-flipped {
+            transform: rotateY(180deg);
+        }
+
         .card-front, .card-back {
             position: absolute;
             width: 100%;
@@ -67,437 +70,385 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            border-radius: 2rem;
-            padding: 2rem;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            border: 2px solid #e5e7eb;
+            border-radius: 20px;
+            background: white;
+            padding: 20px;
         }
-        .card-front { background-color: white; color: #ff7eb9; border: 4px solid #fff0f3; }
-        .card-back { background-color: #74ebd5; color: white; transform: rotateY(180deg); border: 4px solid #e0fcf8; }
-        
-        /* Interactive Buttons */
-        .nav-btn {
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border-bottom: 4px solid rgba(0,0,0,0.1);
+
+        .card-back {
+            transform: rotateY(180deg);
+            background-color: #f8fafc;
         }
-        .nav-btn:active { transform: scale(0.95) translateY(2px); border-bottom-width: 0; }
-        
+
+        /* 버튼 및 인터페이스 */
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .choice-btn {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+
+        .choice-btn:hover {
+            background-color: #f3f4f6;
+        }
+
+        .choice-btn.correct {
+            background-color: #dcfce7;
+            border-color: #22c55e;
+            color: #166534;
+        }
+
+        .choice-btn.wrong {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+
         .letter-tile {
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 42px; height: 46px; background: white; border: 3px solid #ffd1dc;
-            border-radius: 12px; font-weight: bold; font-size: 1.25rem;
-            cursor: pointer; user-select: none; transition: all 0.1s;
-            color: #ff8fab;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            background: white;
+            cursor: pointer;
         }
-        .letter-tile:active { transform: translateY(4px); background-color: #fff0f3; }
-        .letter-tile.used { opacity: 0.2; pointer-events: none; }
+
+        .letter-tile.used {
+            opacity: 0.3;
+            pointer-events: none;
+        }
 
         .answer-slot {
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 36px; height: 42px; border-bottom: 4px solid #ffd1dc; margin: 0 3px;
-            font-weight: 800; font-size: 1.4rem; color: #ff7495;
+            width: 35px;
+            height: 45px;
+            border-bottom: 3px solid #3b82f6;
+            margin: 0 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #1e40af;
         }
-        
-        /* Choice Buttons */
-        .choice-btn {
-            width: 100%; text-align: center; padding: 1rem; border-radius: 1.5rem;
-            border: 3px solid white; background: rgba(255,255,255,0.9); 
-            font-weight: 700; color: #5c7cfa;
-            transition: all 0.2s; box-shadow: 0 4px 0px rgba(0,0,0,0.04);
-        }
-        .choice-btn:hover { background: white; transform: translateY(-2px); box-shadow: 0 6px 0px rgba(0,0,0,0.04); }
-        .choice-btn.correct { background-color: #d3f9d8; border-color: #51cf66; color: #2b8a3e; }
-        .choice-btn.wrong { background-color: #fff0f0; border-color: #ff8787; color: #c92a2a; }
-
-        /* Progress Bar */
-        .progress-candy {
-            height: 12px;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.6);
-            overflow: hidden;
-            border: 2px solid white;
-        }
-
-        .shake { animation: shake 0.5s; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
-        
-        .pop-in { animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes pop-in { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body>
-    <div id="app" class="w-full max-w-md">
-        <!-- Header -->
-        <header class="mb-6 text-center">
-            <h1 class="text-4xl font-bold text-white cute-title tracking-tight mb-4">Word Candy 🍬</h1>
-            <div class="flex flex-wrap justify-center gap-2 p-1 bg-white/40 rounded-3xl backdrop-blur-sm shadow-inner">
-                <button onclick="showMode('study')" id="btn-study" class="nav-btn flex-1 px-3 py-2.5 rounded-2xl bg-white text-pink-500 font-bold text-sm shadow-sm">🍿 학습</button>
-                <button onclick="showMode('quiz')" id="btn-quiz" class="nav-btn flex-1 px-3 py-2.5 rounded-2xl text-pink-600 font-bold text-sm">🎨 스펠링</button>
-                <button onclick="showMode('choice')" id="btn-choice" class="nav-btn flex-1 px-3 py-2.5 rounded-2xl text-pink-600 font-bold text-sm">🍭 선택</button>
-            </div>
-        </header>
 
-        <!-- Main Container -->
-        <div class="bubble-container">
-            <!-- Progress Section -->
-            <div id="progress-container" class="mb-6">
-                <div class="flex justify-between items-center text-xs text-pink-600 font-black mb-1.5 px-1">
-                    <span id="progress-text">1 / 40</span>
-                    <span id="progress-percent">0%</span>
-                </div>
-                <div class="progress-candy">
-                    <div id="progress-bar" class="bg-gradient-to-r from-pink-300 to-pink-500 h-full transition-all duration-500 shadow-inner" style="width: 0%"></div>
-                </div>
-            </div>
-
-            <!-- Study Mode Content -->
-            <div id="study-mode" class="space-y-6">
-                <div class="word-card" onclick="flipCard()">
-                    <div id="main-card" class="card-inner">
-                        <div class="card-front">
-                            <span id="card-pos" class="bg-pink-50 text-pink-500 px-3 py-0.5 rounded-full text-[10px] font-black mb-3 border border-pink-100"></span>
-                            <h2 id="card-word" class="text-4xl font-black tracking-tight mb-1"></h2>
-                            <span id="card-pron" class="text-pink-300 font-bold text-lg mb-4"></span>
-                            <div class="bg-pink-50/50 px-4 py-2 rounded-2xl border border-pink-100">
-                                <p id="card-phrase" class="text-pink-400 italic text-sm font-medium"></p>
-                            </div>
-                            <p class="mt-6 text-[10px] text-pink-200 font-bold animate-pulse">탭해서 뜻 확인하기! ✨</p>
-                        </div>
-                        <div class="card-back">
-                            <h3 id="card-meaning" class="text-3xl font-black mb-3"></h3>
-                            <div class="w-12 h-1 bg-white/50 rounded-full mb-4"></div>
-                            <p id="card-def" class="text-sm font-bold mb-1 leading-tight px-4"></p>
-                            <p id="card-def-kor" class="text-[10px] opacity-90 leading-tight px-4 font-medium italic"></p>
-                            <div id="card-syn" class="mt-5 text-[10px] font-black bg-black/5 px-4 py-1.5 rounded-full border border-white/20"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex gap-3">
-                    <button onclick="prevWord()" class="nav-btn flex-1 py-3.5 rounded-2xl bg-white/60 text-pink-400 font-black hover:bg-white transition text-sm">이전</button>
-                    <button onclick="nextWord()" class="nav-btn flex-[2] py-3.5 rounded-2xl bg-pink-500 text-white font-black shadow-lg hover:bg-pink-600 transition text-sm">다음 단어 ✨</button>
-                </div>
-            </div>
-
-            <!-- Spelling Quiz Content -->
-            <div id="quiz-mode" class="hidden">
-                <div id="quiz-ui" class="flex flex-col items-center justify-center min-h-[320px]">
-                    <!-- Correct Overlay -->
-                    <div id="correct-overlay" class="hidden absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center pop-in px-8 text-center rounded-[2.5rem]">
-                        <div class="text-4xl mb-4 animate-bounce">⭐</div>
-                        <div id="reveal-word" class="text-3xl font-black text-pink-500 tracking-tight mb-1"></div>
-                        <div id="reveal-meaning" class="text-lg font-black text-slate-700 mb-3 bg-pink-50 px-4 py-1 rounded-full"></div>
-                        <p id="reveal-def" class="text-xs text-slate-500 font-bold mb-1"></p>
-                        <p id="reveal-def-kor" class="text-[10px] text-slate-400 italic"></p>
-                    </div>
-
-                    <div class="text-center mb-6">
-                        <h2 id="quiz-question" class="text-3xl font-black text-slate-800 mb-2"></h2>
-                        <span class="px-3 py-0.5 bg-blue-50 text-blue-400 text-[10px] font-black rounded-full border border-blue-100 uppercase tracking-widest">Type it!</span>
-                    </div>
-                    
-                    <div id="answer-display" class="flex flex-wrap justify-center mb-8 min-h-[42px]"></div>
-                    <div id="letter-pool" class="flex flex-wrap justify-center gap-2 mb-6"></div>
-                    
-                    <div class="flex justify-center gap-2 w-full">
-                        <button onclick="backspace()" class="flex-1 py-3 bg-white border-2 border-pink-50 text-pink-400 rounded-2xl text-xs font-black shadow-sm">지우기</button>
-                        <button onclick="clearCurrentAnswer()" class="flex-1 py-3 bg-pink-50 text-pink-500 rounded-2xl text-xs font-black shadow-sm">전체삭제</button>
-                    </div>
-                    <div id="quiz-feedback" class="mt-4 text-center font-black text-[11px] h-4"></div>
-                </div>
-            </div>
-
-            <!-- Choice Quiz Content -->
-            <div id="choice-mode" class="hidden">
-                <div id="choice-ui" class="flex flex-col items-center min-h-[320px]">
-                    <div class="text-center mb-6">
-                        <span class="text-[10px] font-black text-green-500 bg-green-50 px-3 py-1 rounded-full border border-green-100 uppercase tracking-widest">Pick one!</span>
-                        <h2 id="choice-question-word" class="text-4xl font-black text-slate-800 mt-3 mb-1 tracking-tight"></h2>
-                        <p id="choice-question-pron" class="text-slate-300 font-bold text-sm italic"></p>
-                    </div>
-                    <div id="choices-grid" class="grid grid-cols-1 gap-3 w-full mb-4"></div>
-                    <div id="choice-feedback" class="text-center font-black text-[11px] h-4 transition-all"></div>
-                </div>
-            </div>
-
-            <!-- Final Result Content -->
-            <div id="result-view" class="hidden text-center py-6">
-                <div class="text-6xl mb-4 animate-bounce">👑</div>
-                <h2 class="text-3xl font-black text-slate-800 mb-3 cute-title">Great Job!</h2>
-                <p class="text-slate-500 mb-8 text-sm font-medium">단어 40개를 모두 학습했어요.<br>이제 완벽하게 기억하시나요?</p>
-                <button onclick="location.reload()" class="w-full py-4 bg-gradient-to-r from-pink-400 to-pink-500 text-white rounded-2xl font-black shadow-lg transform active:scale-95 transition text-sm">처음부터 다시 🍭</button>
-            </div>
-        </div>
-        
-        <footer class="mt-8 text-center text-white/60 text-[10px] font-bold uppercase tracking-widest">
-            Level 10 Vocabulary Master
-        </footer>
+<div class="main-container">
+    <!-- 상단 탭 -->
+    <div class="flex border-b">
+        <button onclick="changeMode('study')" id="tab-study" class="flex-1 py-4 font-bold text-blue-600 border-b-2 border-blue-600">학습하기</button>
+        <button onclick="changeMode('choice')" id="tab-choice" class="flex-1 py-4 font-bold text-gray-500">뜻 선택</button>
+        <button onclick="changeMode('spelling')" id="tab-spelling" class="flex-1 py-4 font-bold text-gray-500">스펠링</button>
     </div>
 
-    <script>
-        const wordsData = [
-            { id: 1, word: "identify", pron: "아이덴티파이", pos: "v", meaning: "식별하다", phrase: "identify the criminal", def: "to find out who someone is or what something is", defKor: "누군가 또는 무언가가 누구인지 혹은 무엇인지 알아내다", syn: "recognize" },
-            { id: 2, word: "interact", pron: "인터랙트", pos: "v", meaning: "소통하다", phrase: "interact with the audience", def: "to talk or do things with other people", defKor: "다른 사람들과 이야기하거나 무언가를 하다", syn: "communicate" },
-            { id: 3, word: "comparison", pron: "컴패리슨", pos: "n", meaning: "비교", phrase: "price comparison", def: "the process of comparing two or more people or things", defKor: "두 명 이상의 사람이나 사물을 비교하는 과정", syn: "" },
-            { id: 4, word: "origin", pron: "오리진", pos: "n", meaning: "기원", phrase: "origin of life", def: "the point or place where something begins or is created", defKor: "무언가가 시작되거나 창조되는 지점 또는 장소", syn: "" },
-            { id: 5, word: "unexpected", pron: "언익스펙티드", pos: "a", meaning: "뜻밖의", phrase: "unexpected question", def: "not expected", defKor: "예상치 못한", syn: "unforeseen" },
-            { id: 6, word: "remedy", pron: "레머디", pos: "n", meaning: "요법", phrase: "home remedy", def: "a treatment or medicine to cure a disease or reduce pain", defKor: "질병을 치료하거나 통증을 줄이는 치료법이나 약", syn: "cure" },
-            { id: 7, word: "violate", pron: "바이얼레이트", pos: "v", meaning: "침해하다", phrase: "violate privacy", def: "to take away, interfere with, or ignore something such as person's rights or privacy", defKor: "프라이버시 등을 빼앗거나 방해하거나 무시하다", syn: "breach" },
-            { id: 8, word: "hygiene", pron: "하이지인", pos: "n", meaning: "위생", phrase: "personal hygiene", def: "keeping yourself and your environment clean to prevent disease", defKor: "질병 예방을 위해 자신과 환경을 깨끗하게 유지하는 관리", syn: "cleanliness" },
-            { id: 9, word: "chaos", pron: "케이오스", pos: "n", meaning: "혼돈", phrase: "total chaos", def: "a state of complete confusion and lack of order", defKor: "질서가 없고 완전히 혼란스러운 상태", syn: "disorder" },
-            { id: 10, word: "ritual", pron: "리추얼", pos: "n", meaning: "의식", phrase: "religious ritual", def: "a formal ceremony", defKor: "격식을 갖춘 의식", syn: "ceremony" },
-            { id: 11, word: "illuminate", pron: "일루미네이트", pos: "v", meaning: "비추다", phrase: "illuminate dark streets", def: "to shine light on something", defKor: "무언가에 빛을 비추다", syn: "light up" },
-            { id: 12, word: "convert", pron: "컨버트", pos: "v", meaning: "전환하다", phrase: "convert sunlight into energy", def: "to change something from one form to different one", defKor: "무언가를 한 형태에서 다른 형태로 바꾸다", syn: "transform" },
-            { id: 13, word: "descent", pron: "디센트", pos: "n", meaning: "혈통", phrase: "royal descent", def: "the family or the race of people that you come from", defKor: "당신이 속해 나온 가족이나 인종", syn: "ancestry" },
-            { id: 14, word: "alternative", pron: "얼터너티브", pos: "n", meaning: "대안", phrase: "realistic alternative", def: "something you can choose instead of something else", defKor: "다른 것 대신 선택할 수 있는 무언가", syn: "substitute" },
-            { id: 15, word: "vaccination", pron: "백시네이션", pos: "n", meaning: "예방접종", phrase: "flu vaccination", def: "the act of giving a vaccine to protect against disease", defKor: "질병으로부터 보호하기 위해 백신을 투여하는 행위", syn: "" },
-            { id: 16, word: "divine", pron: "디바인", pos: "a", meaning: "신의", phrase: "divine will", def: "relating to or coming from God or a god", defKor: "신과 관련이 있거나 신에게서 온", syn: "" },
-            { id: 17, word: "exposure", pron: "익스포저", pos: "n", meaning: "노출", phrase: "exposure to cold", def: "the state of being exposed to contact with something", defKor: "무언가와의 접촉에 노출된 상태", syn: "uncovering" },
-            { id: 18, word: "ambient", pron: "앰비언트", pos: "a", meaning: "주변의", phrase: "ambient noise", def: "existing or present around you", defKor: "주변에 존재하거나 있는", syn: "" },
-            { id: 19, word: "catchy", pron: "캐치", pos: "a", meaning: "귀에 착 감기는", phrase: "catchy melody", def: "pleasing and easily remembered", defKor: "듣기 좋고 쉽게 기억되는", syn: "memorable" },
-            { id: 20, word: "immigrant", pron: "이미그런트", pos: "n", meaning: "이민자", phrase: "illegal immigrant", def: "a person who comes to live in a country from another", defKor: "다른 나라에서 어떤 나라로 살기 위해 온 사람", syn: "settler" },
-            { id: 21, word: "notable", pron: "노터블", pos: "a", meaning: "주목할 만한", phrase: "notable achievement", def: "unusual and worth noticing", defKor: "평범하지 않고 주목할 가치가 있는", syn: "remarkable" },
-            { id: 22, word: "moving", pron: "무빙", pos: "a", meaning: "감동적인", phrase: "moving story", def: "causing deep feelings of sadness or sympathy", defKor: "깊은 슬픔이나 공감을 느끼게 하는", syn: "touching" },
-            { id: 23, word: "embrace", pron: "임브레이스", pos: "v", meaning: "받아들이다", phrase: "embrace new ideas", def: "to accept something with great interest", defKor: "큰 관심을 가지고 무언가를 받아들이다", syn: "welcome" },
-            { id: 24, word: "retain", pron: "리테인", pos: "v", meaning: "유지하다", phrase: "retain control", def: "to keep something", defKor: "무언가를 유지하다", syn: "maintain" },
-            { id: 25, word: "organ", pron: "오건", pos: "n", meaning: "장기", phrase: "organ transplant", def: "a part of the body that has a particular purpose", defKor: "특정한 목적을 가진 신체의 일부", syn: "" },
-            { id: 26, word: "vandalism", pron: "밴덜리즘", pos: "n", meaning: "기물 파손", phrase: "act of vandalism", def: "intentionally damaging public or private property", defKor: "공공 또는 사유 재산을 고의로 손상시키는 행위", syn: "" },
-            { id: 27, word: "segregation", pron: "세그리게이션", pos: "n", meaning: "분리", phrase: "racial segregation", def: "separating people of different races or religions", defKor: "다른 인종이나 종교의 사람들을 분리하는 행위", syn: "discrimination" },
-            { id: 28, word: "deter", pron: "디터", pos: "v", meaning: "막다", phrase: "deter crime", def: "to prevent or discourage someone from doing something", defKor: "누군가가 무언가를 하는 것을 막거나 단념시키다", syn: "thwart" },
-            { id: 29, word: "statistics", pron: "스터티스틱스", pos: "n", meaning: "통계", phrase: "official statistics", def: "a collection of information shown in numbers", defKor: "숫자로 표시된 정보의 모음", syn: "figures" },
-            { id: 30, word: "dense", pron: "덴스", pos: "a", meaning: "밀도가 높은", phrase: "dense fog", def: "heavy in relation to its size; thick", defKor: "크기에 비해 무겁거나 빽빽한", syn: "" },
-            { id: 31, word: "overstate", pron: "오버스테이트", pos: "v", meaning: "과장하다", phrase: "overstate the risk", def: "to make something seem more important than it really is", defKor: "무언가를 실제보다 더 중요하게 보이도록 말하다", syn: "exaggerate" },
-            { id: 32, word: "uncover", pron: "언커버", pos: "v", meaning: "밝혀내다", phrase: "uncover the truth", def: "to find out about something that has been kept secret", defKor: "비밀로 유지되어 온 무언가에 대해 알아내다", syn: "discover" },
-            { id: 33, word: "absence", pron: "앱선스", pos: "n", meaning: "부재", phrase: "absence of light", def: "someone or something not existing or not available", defKor: "누군가 또는 무언가가 존재하지 않거나 이용할 수 없는 상태", syn: "" },
-            { id: 34, word: "recurring", pron: "리커링", pos: "a", meaning: "되풀이되는", phrase: "recurring theme", def: "happening again or a number of times", defKor: "다시 또는 여러 번 일어나는", syn: "repeating" },
-            { id: 35, word: "emit", pron: "이미트", pos: "v", meaning: "내뿜다", phrase: "emit light", def: "to send out light, heat, sound, gas, etc.", defKor: "빛, 열, 소리, 가스 등을 내보내다", syn: "give off" },
-            { id: 36, word: "detect", pron: "디텍트", pos: "v", meaning: "탐지하다", phrase: "detect a leak", def: "to notice or discover something", defKor: "무언가를 알아차리거나 발견하다", syn: "spot" },
-            { id: 37, word: "sanitation", pron: "새니테이션", pos: "n", meaning: "위생 설비", phrase: "modern sanitation", def: "systems that keep places clean by removing waste", defKor: "폐기물을 제거하여 장소를 깨끗하게 유지하는 시스템", syn: "" },
-            { id: 38, word: "healthcare", pron: "헬스케어", pos: "n", meaning: "의료", phrase: "healthcare system", def: "the services that take care of people's health", defKor: "사람들의 건강을 돌보는 서비스", syn: "" },
-            { id: 39, word: "unauthorized", pron: "언오서라이즈드", pos: "a", meaning: "무허가의", phrase: "unauthorized access", def: "without official permission", defKor: "공식적인 허가 없는", syn: "" },
-            { id: 40, word: "adequate", pron: "애디퀴트", pos: "a", meaning: "충분한", phrase: "adequate resources", def: "enough in quantity or good enough in quality", defKor: "양이 충분하거나 질이 충분히 좋은", syn: "sufficient" }
-        ];
+    <!-- 진행률 -->
+    <div class="px-6 pt-6">
+        <div class="flex justify-between text-sm font-bold text-gray-500 mb-2">
+            <span id="progress-text">1 / 40</span>
+            <span id="progress-percent">0%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2.5">
+            <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+        </div>
+    </div>
 
-        let currentIndex = 0; 
-        let currentMode = 'study';
-        let quizQueue = []; 
-        let flipCount = 0;
-        let isProcessing = false;
-        let currentTypedAnswer = "";
-        let selectedTileElements = [];
+    <!-- 콘텐츠 영역 -->
+    <div class="flex-1 p-6 flex flex-col justify-center">
+        
+        <!-- 1. 학습하기 모드 -->
+        <div id="mode-study" class="mode-content">
+            <div class="card-container" onclick="toggleFlip()">
+                <div id="flashcard" class="card-inner">
+                    <div class="card-front">
+                        <span id="study-pos" class="text-blue-500 font-bold mb-2"></span>
+                        <h2 id="study-word" class="word-text text-5xl mb-4"></h2>
+                        <p id="study-pron" class="text-gray-400 text-xl italic"></p>
+                        <p class="mt-8 text-sm text-gray-300 font-bold">카드를 터치하면 뜻이 보여요!</p>
+                    </div>
+                    <div class="card-back">
+                        <h3 id="study-meaning" class="meaning-text text-4xl mb-6"></h3>
+                        <div class="text-left w-full space-y-2">
+                            <p class="text-gray-600 font-semibold text-center italic" id="study-phrase"></p>
+                            <hr class="my-4">
+                            <p class="text-sm text-gray-500" id="study-def"></p>
+                            <p class="text-xs text-gray-400" id="study-def-kor"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-4 mt-8">
+                <button onclick="prevWord()" class="flex-1 py-4 bg-gray-100 rounded-xl font-bold text-gray-600">이전</button>
+                <button onclick="nextWord()" class="flex-1 py-4 btn-primary rounded-xl font-bold">다음 단어</button>
+            </div>
+        </div>
 
-        function showMode(mode) {
-            currentMode = mode;
-            document.getElementById('study-mode').classList.add('hidden');
-            document.getElementById('quiz-mode').classList.add('hidden');
-            document.getElementById('choice-mode').classList.add('hidden');
-            document.getElementById('result-view').classList.add('hidden');
+        <!-- 2. 뜻 선택 퀴즈 -->
+        <div id="mode-choice" class="mode-content hidden">
+            <div class="text-center mb-8">
+                <h2 id="choice-word" class="word-text text-5xl mb-2"></h2>
+                <p id="choice-pron" class="text-gray-400 text-lg"></p>
+            </div>
+            <div id="choice-options" class="flex flex-col">
+                <!-- 선택지 버튼이 여기에 생성됨 -->
+            </div>
+        </div>
 
-            const btnStudy = document.getElementById('btn-study');
-            const btnQuiz = document.getElementById('btn-quiz');
-            const btnChoice = document.getElementById('btn-choice');
+        <!-- 3. 스펠링 퀴즈 -->
+        <div id="mode-spelling" class="mode-content hidden">
+            <div class="text-center mb-6">
+                <h2 id="spelling-meaning" class="meaning-text text-3xl mb-4"></h2>
+                <div id="spelling-slots" class="flex justify-center flex-wrap mb-8"></div>
+            </div>
+            <div id="spelling-pool" class="flex flex-wrap justify-center gap-2 mb-8"></div>
+            <div class="flex gap-2">
+                <button onclick="resetSpelling()" class="flex-1 py-3 bg-gray-100 rounded-lg font-bold text-gray-500">지우기</button>
+            </div>
+        </div>
 
-            [btnStudy, btnQuiz, btnChoice].forEach(b => b.className = "nav-btn flex-1 px-3 py-2.5 rounded-2xl text-pink-600 font-bold text-sm");
-            
-            if (mode === 'study') {
-                btnStudy.className = "nav-btn flex-1 px-3 py-2.5 rounded-2xl bg-white text-pink-500 font-bold text-sm shadow-sm";
-                document.getElementById('study-mode').classList.remove('hidden');
-                renderStudyCard();
-            } else if (mode === 'quiz') {
-                btnQuiz.className = "nav-btn flex-1 px-3 py-2.5 rounded-2xl bg-white text-pink-500 font-bold text-sm shadow-sm";
-                document.getElementById('quiz-mode').classList.remove('hidden');
-                startSpellingQuiz();
-            } else if (mode === 'choice') {
-                btnChoice.className = "nav-btn flex-1 px-3 py-2.5 rounded-2xl bg-white text-pink-500 font-bold text-sm shadow-sm";
-                document.getElementById('choice-mode').classList.remove('hidden');
-                startChoiceQuiz();
-            }
+        <!-- 결과 화면 -->
+        <div id="mode-result" class="mode-content hidden text-center">
+            <div class="text-7xl mb-6">🎉</div>
+            <h2 class="text-3xl font-black mb-4">학습 완료!</h2>
+            <p class="text-gray-500 mb-8">Lesson 10의 모든 단어를 마스터했습니다.</p>
+            <button onclick="location.reload()" class="w-full py-4 btn-primary rounded-xl font-bold">다시 학습하기</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const words = [
+        { word: "identify", pron: "아이덴티파이", pos: "v", meaning: "식별하다", phrase: "identify the criminal", def: "to find out who someone is or what something is", defKor: "누군가 또는 무언가가 누구인지 알아내다" },
+        { word: "interact", pron: "인터랙트", pos: "v", meaning: "소통하다", phrase: "interact with the audience", def: "to talk or do things with other people", defKor: "다른 사람들과 소통하거나 활동하다" },
+        { word: "comparison", pron: "컴패리슨", pos: "n", meaning: "비교", phrase: "price comparison", def: "the process of comparing two or more things", defKor: "두 가지 이상의 사물을 비교하는 과정" },
+        { word: "origin", pron: "오리진", pos: "n", meaning: "기원", phrase: "origin of life", def: "the point or place where something begins", defKor: "무언가가 시작되는 지점이나 장소" },
+        { word: "unexpected", pron: "언익스펙티드", pos: "a", meaning: "뜻밖의", phrase: "unexpected question", def: "not expected", defKor: "예상하지 못한" },
+        { word: "remedy", pron: "레머디", pos: "n", meaning: "요법", phrase: "home remedy", def: "a treatment to cure or reduce pain", defKor: "통증을 줄이거나 치료하는 방법" },
+        { word: "violate", pron: "바이얼레이트", pos: "v", meaning: "침해하다", phrase: "violate privacy", def: "to interfere with someone's rights", defKor: "타인의 권리를 침해하다" },
+        { word: "hygiene", pron: "하이지인", pos: "n", meaning: "위생", phrase: "personal hygiene", def: "keeping yourself clean to prevent disease", defKor: "질병 예방을 위해 몸을 깨끗이 하는 것" },
+        { word: "chaos", pron: "케이오스", pos: "n", meaning: "혼돈", phrase: "total chaos", def: "a state of complete confusion", defKor: "완전한 혼란 상태" },
+        { word: "ritual", pron: "리추얼", pos: "n", meaning: "의식", phrase: "religious ritual", def: "a formal ceremony", defKor: "격식을 갖춘 의식" },
+        { word: "illuminate", pron: "일루미네이트", pos: "v", meaning: "비추다", phrase: "illuminate dark streets", def: "to shine light on something", defKor: "무언가에 빛을 비추다" },
+        { word: "convert", pron: "컨버트", pos: "v", meaning: "전환하다", phrase: "convert sunlight into energy", def: "to change something from one form to another", defKor: "무언가를 다른 형태로 바꾸다" },
+        { word: "descent", pron: "디센트", pos: "n", meaning: "혈통", phrase: "royal descent", def: "the family or race you come from", defKor: "가족이나 인종의 계통" },
+        { word: "alternative", pron: "얼터너티브", pos: "n", meaning: "대안", phrase: "realistic alternative", def: "something you can choose instead", defKor: "대신 선택할 수 있는 것" },
+        { word: "vaccination", pron: "백시네이션", pos: "n", meaning: "예방접종", phrase: "flu vaccination", def: "giving a vaccine to protect against disease", defKor: "질병 예방을 위한 백신 투여" },
+        { word: "divine", pron: "디바인", pos: "a", meaning: "신의", phrase: "divine will", def: "relating to God", defKor: "신과 관련된" },
+        { word: "exposure", pron: "익스포저", pos: "n", meaning: "노출", phrase: "exposure to cold", def: "being exposed to something", defKor: "무언가에 노출된 상태" },
+        { word: "ambient", pron: "앰비언트", pos: "a", meaning: "주변의", phrase: "ambient noise", def: "existing or present around you", defKor: "주변에 존재하는" },
+        { word: "catchy", pron: "캐치", pos: "a", meaning: "기억하기 쉬운", phrase: "catchy melody", def: "pleasing and easily remembered", defKor: "즐겁고 기억하기 쉬운" },
+        { word: "immigrant", pron: "이미그런트", pos: "n", meaning: "이민자", phrase: "illegal immigrant", def: "a person who moves to another country", defKor: "타국으로 이주한 사람" },
+        { word: "notable", pron: "노터블", pos: "a", meaning: "주목할 만한", phrase: "notable achievement", def: "worth noticing", defKor: "주목할 가치가 있는" },
+        { word: "moving", pron: "무빙", pos: "a", meaning: "감동적인", phrase: "moving story", def: "causing deep feelings of sympathy", defKor: "깊은 감동을 주는" },
+        { word: "embrace", pron: "임브레이스", pos: "v", meaning: "받아들이다", phrase: "embrace new ideas", def: "to accept something with interest", defKor: "무언가를 기꺼이 받아들이다" },
+        { word: "retain", pron: "리테인", pos: "v", meaning: "유지하다", phrase: "retain control", def: "to keep something", defKor: "무언가를 보유/유지하다" },
+        { word: "organ", pron: "오건", pos: "n", meaning: "장기", phrase: "organ transplant", def: "a part of the body with a purpose", defKor: "특정 기능을 하는 신체 부위" },
+        { word: "vandalism", pron: "밴덜리즘", pos: "n", meaning: "기물 파손", phrase: "act of vandalism", def: "damaging property intentionally", defKor: "재산을 고의로 파손하는 행위" },
+        { word: "segregation", pron: "세그리게이션", pos: "n", meaning: "분리", phrase: "racial segregation", def: "separating people by race/religion", defKor: "인종/종교 등에 따른 분리" },
+        { word: "deter", pron: "디터", pos: "v", meaning: "막다", phrase: "deter crime", def: "to prevent someone from doing something", defKor: "행동을 못 하도록 막다" },
+        { word: "statistics", pron: "스터티스틱스", pos: "n", meaning: "통계", phrase: "official statistics", def: "info shown in numbers", defKor: "수치로 표현된 정보" },
+        { word: "dense", pron: "덴스", pos: "a", meaning: "밀집한", phrase: "dense fog", def: "thick or heavy", defKor: "빽빽하거나 짙은" },
+        { word: "overstate", pron: "오버스테이트", pos: "v", meaning: "과장하다", phrase: "overstate the risk", def: "to make something seem more important", defKor: "실제보다 크게 말하다" },
+        { word: "uncover", pron: "언커버", pos: "v", meaning: "밝혀내다", phrase: "uncover the truth", def: "to find out something secret", defKor: "비밀을 알아내다" },
+        { word: "absence", pron: "앱선스", pos: "n", meaning: "부재", phrase: "absence of light", def: "something not existing", defKor: "존재하지 않는 상태" },
+        { word: "recurring", pron: "리커링", pos: "a", meaning: "반복되는", phrase: "recurring theme", def: "happening again and again", defKor: "다시 발생하는" },
+        { word: "emit", pron: "이미트", pos: "v", meaning: "내뿜다", phrase: "emit light", def: "to send out light or gas", defKor: "빛이나 가스 등을 내보내다" },
+        { word: "detect", pron: "디텍트", pos: "v", meaning: "탐지하다", phrase: "detect a leak", def: "to notice or discover", defKor: "알아차리거나 발견하다" },
+        { word: "sanitation", pron: "새니테이션", pos: "n", meaning: "위생설비", phrase: "modern sanitation", def: "waste removal systems", defKor: "폐기물 처리 시스템" },
+        { word: "healthcare", pron: "헬스케어", pos: "n", meaning: "의료", phrase: "healthcare system", def: "services for health", defKor: "건강 관리 서비스" },
+        { word: "unauthorized", pron: "언오서라이즈드", pos: "a", meaning: "무허가의", phrase: "unauthorized access", def: "without official permission", defKor: "공식 허가 없는" },
+        { word: "adequate", pron: "애디퀴트", pos: "a", meaning: "충분한", phrase: "adequate resources", def: "enough in quantity", defKor: "양이 충분한" }
+    ];
+
+    let currentIndex = 0;
+    let currentMode = 'study';
+    let quizData = [];
+    let currentAnswer = "";
+
+    function changeMode(mode) {
+        currentMode = mode;
+        // 탭 스타일 변경
+        document.querySelectorAll('button[id^="tab-"]').forEach(btn => {
+            btn.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+            btn.classList.add('text-gray-500');
+        });
+        document.getElementById(`tab-${mode}`).classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+        document.getElementById(`tab-${mode}`).classList.remove('text-gray-500');
+
+        // 콘텐츠 표시
+        document.querySelectorAll('.mode-content').forEach(content => content.classList.add('hidden'));
+        document.getElementById(`mode-${mode}`).classList.remove('hidden');
+
+        // 모드별 초기화
+        currentIndex = 0;
+        if (mode === 'study') initStudy();
+        else if (mode === 'choice') initChoice();
+        else if (mode === 'spelling') initSpelling();
+    }
+
+    function updateProgress() {
+        const total = words.length;
+        const current = currentIndex + 1;
+        const percent = (current / total) * 100;
+        document.getElementById('progress-text').innerText = `${current} / ${total}`;
+        document.getElementById('progress-percent').innerText = `${Math.round(percent)}%`;
+        document.getElementById('progress-bar').style.width = `${percent}%`;
+    }
+
+    /* --- 학습하기 로직 --- */
+    function initStudy() {
+        const word = words[currentIndex];
+        document.getElementById('flashcard').classList.remove('is-flipped');
+        document.getElementById('study-word').innerText = word.word;
+        document.getElementById('study-pron').innerText = `[${word.pron}]`;
+        document.getElementById('study-pos').innerText = word.pos.toUpperCase();
+        document.getElementById('study-meaning').innerText = word.meaning;
+        document.getElementById('study-phrase').innerText = `"${word.phrase}"`;
+        document.getElementById('study-def').innerText = word.def;
+        document.getElementById('study-def-kor').innerText = `(${word.defKor})`;
+        updateProgress();
+    }
+
+    function toggleFlip() {
+        document.getElementById('flashcard').classList.toggle('is-flipped');
+    }
+
+    function nextWord() {
+        if (currentIndex < words.length - 1) {
+            currentIndex++;
+            initStudy();
+        } else {
+            showResult();
+        }
+    }
+
+    function prevWord() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            initStudy();
+        }
+    }
+
+    /* --- 뜻 선택 로직 --- */
+    function initChoice() {
+        updateProgress();
+        const word = words[currentIndex];
+        document.getElementById('choice-word').innerText = word.word;
+        document.getElementById('choice-pron').innerText = `[${word.pron}]`;
+        
+        const optionsContainer = document.getElementById('choice-options');
+        optionsContainer.innerHTML = '';
+
+        let choices = [word.meaning];
+        while (choices.length < 4) {
+            let randomMeaning = words[Math.floor(Math.random() * words.length)].meaning;
+            if (!choices.includes(randomMeaning)) choices.push(randomMeaning);
+        }
+        choices.sort(() => Math.random() - 0.5);
+
+        choices.forEach(choice => {
+            const btn = document.createElement('button');
+            btn.className = "choice-btn";
+            btn.innerText = choice;
+            btn.onclick = () => {
+                if (choice === word.meaning) {
+                    btn.classList.add('correct');
+                    setTimeout(() => {
+                        if (currentIndex < words.length - 1) {
+                            currentIndex++;
+                            initChoice();
+                        } else showResult();
+                    }, 600);
+                } else {
+                    btn.classList.add('wrong');
+                }
+            };
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    /* --- 스펠링 로직 --- */
+    let spellingTyped = "";
+    function initSpelling() {
+        updateProgress();
+        const word = words[currentIndex];
+        spellingTyped = "";
+        document.getElementById('spelling-meaning').innerText = word.meaning;
+        
+        const slots = document.getElementById('spelling-slots');
+        slots.innerHTML = '';
+        for (let i = 0; i < word.word.length; i++) {
+            const div = document.createElement('div');
+            div.className = "answer-slot";
+            slots.appendChild(div);
         }
 
-        function updateProgress(current, total) {
-            const percent = Math.round((current / total) * 100);
-            document.getElementById('progress-text').innerText = `${current} / ${total}`;
-            document.getElementById('progress-percent').innerText = `${percent}%`;
-            document.getElementById('progress-bar').style.width = `${percent}%`;
-        }
+        const pool = document.getElementById('spelling-pool');
+        pool.innerHTML = '';
+        const letters = word.word.split('').sort(() => Math.random() - 0.5);
+        letters.forEach((char, idx) => {
+            const tile = document.createElement('div');
+            tile.className = "letter-tile shadow-sm";
+            tile.innerText = char;
+            tile.onclick = () => {
+                if (tile.classList.contains('used')) return;
+                tile.classList.add('used');
+                const nextSlot = slots.children[spellingTyped.length];
+                nextSlot.innerText = char;
+                spellingTyped += char;
 
-        /* --- Study Logic --- */
-        function renderStudyCard() {
-            flipCount = 0;
-            const word = wordsData[currentIndex];
-            document.getElementById('card-word').innerText = word.word;
-            document.getElementById('card-pron').innerText = `[${word.pron}]`;
-            document.getElementById('card-pos').innerText = word.pos.toUpperCase();
-            document.getElementById('card-phrase').innerText = `"${word.phrase}"`;
-            document.getElementById('card-meaning').innerText = word.meaning;
-            document.getElementById('card-def').innerText = word.def;
-            document.getElementById('card-def-kor').innerText = `(${word.defKor})`;
-            document.getElementById('card-syn').innerText = word.syn ? `유의어: ${word.syn}` : "유의어 없음";
-            document.getElementById('main-card').classList.remove('is-flipped');
-            updateProgress(currentIndex + 1, wordsData.length);
-        }
+                if (spellingTyped === word.word) {
+                    setTimeout(() => {
+                        if (currentIndex < words.length - 1) {
+                            currentIndex++;
+                            initSpelling();
+                        } else showResult();
+                    }, 600);
+                } else if (spellingTyped.length === word.word.length) {
+                    setTimeout(resetSpelling, 600);
+                }
+            };
+            pool.appendChild(tile);
+        });
+    }
 
-        function flipCard() {
-            document.getElementById('main-card').classList.toggle('is-flipped');
-            flipCount++;
-            if (flipCount >= 6) { setTimeout(nextWord, 400); }
-        }
+    function resetSpelling() {
+        spellingTyped = "";
+        const slots = document.getElementById('spelling-slots');
+        Array.from(slots.children).forEach(s => s.innerText = "");
+        const pool = document.getElementById('spelling-pool');
+        Array.from(pool.children).forEach(t => t.classList.remove('used'));
+    }
 
-        function nextWord() {
-            if (currentIndex < wordsData.length - 1) { currentIndex++; renderStudyCard(); }
-            else { showFinalResult(); }
-        }
+    function showResult() {
+        document.querySelectorAll('.mode-content').forEach(c => c.classList.add('hidden'));
+        document.getElementById('mode-result').classList.remove('hidden');
+    }
 
-        function prevWord() {
-            if (currentIndex > 0) { currentIndex--; renderStudyCard(); }
-        }
+    // 초기 실행
+    window.onload = initStudy;
+</script>
 
-        /* --- Spelling Quiz Logic --- */
-        function startSpellingQuiz() {
-            quizQueue = [...wordsData].sort(() => Math.random() - 0.5);
-            renderNextSpelling();
-        }
-
-        function renderNextSpelling() {
-            if (quizQueue.length === 0) { showFinalResult(); return; }
-            isProcessing = false;
-            const current = quizQueue[0];
-            currentTypedAnswer = "";
-            selectedTileElements = [];
-            updateProgress(wordsData.length - quizQueue.length + 1, wordsData.length);
-
-            document.getElementById('correct-overlay').classList.add('hidden');
-            document.getElementById('quiz-question').innerText = current.meaning;
-            document.getElementById('quiz-feedback').innerText = "";
-
-            const display = document.getElementById('answer-display');
-            display.innerHTML = '';
-            for (let i = 0; i < current.word.length; i++) {
-                const s = document.createElement('div');
-                s.className = "answer-slot";
-                s.id = `slot-${i}`;
-                display.appendChild(s);
-            }
-
-            const pool = document.getElementById('letter-pool');
-            pool.innerHTML = '';
-            current.word.split('').sort(() => Math.random() - 0.5).forEach(c => {
-                const t = document.createElement('div');
-                t.className = "letter-tile shadow-sm";
-                t.innerText = c;
-                t.onclick = () => {
-                    if (isProcessing || currentTypedAnswer.length >= current.word.length) return;
-                    t.classList.add('used');
-                    selectedTileElements.push(t);
-                    document.getElementById(`slot-${currentTypedAnswer.length}`).innerText = c;
-                    currentTypedAnswer += c;
-                    if (currentTypedAnswer.length === current.word.length) checkSpelling();
-                };
-                pool.appendChild(t);
-            });
-        }
-
-        function checkSpelling() {
-            isProcessing = true;
-            const current = quizQueue[0];
-            if (currentTypedAnswer === current.word) {
-                document.querySelectorAll('.answer-slot').forEach(s => s.classList.add('text-green-500'));
-                document.getElementById('reveal-word').innerText = current.word;
-                document.getElementById('reveal-meaning').innerText = current.meaning;
-                document.getElementById('reveal-def').innerText = current.def;
-                document.getElementById('reveal-def-kor').innerText = current.defKor;
-                setTimeout(() => document.getElementById('correct-overlay').classList.remove('hidden'), 300);
-                quizQueue.shift();
-                setTimeout(renderNextSpelling, 2200);
-            } else {
-                document.getElementById('quiz-feedback').innerText = "오잉? 다시 해볼까요? 🍭";
-                document.getElementById('quiz-feedback').className = "mt-4 text-center font-black text-[11px] text-red-400 h-4";
-                document.querySelector('.bubble-container').classList.add('shake');
-                setTimeout(() => {
-                    document.querySelector('.bubble-container').classList.remove('shake');
-                    clearCurrentAnswer();
-                    isProcessing = false;
-                }, 600);
-            }
-        }
-
-        function backspace() {
-            if (isProcessing || currentTypedAnswer.length === 0) return;
-            const lastIdx = currentTypedAnswer.length - 1;
-            document.getElementById(`slot-${lastIdx}`).innerText = "";
-            const t = selectedTileElements.pop();
-            t.classList.remove('used');
-            currentTypedAnswer = currentTypedAnswer.slice(0, -1);
-        }
-
-        function clearCurrentAnswer() {
-            if (isProcessing) return;
-            currentTypedAnswer = "";
-            selectedTileElements = [];
-            document.querySelectorAll('.answer-slot').forEach(s => s.innerText = "");
-            document.querySelectorAll('.letter-tile').forEach(t => t.classList.remove('used'));
-        }
-
-        /* --- Choice Quiz Logic --- */
-        function startChoiceQuiz() {
-            quizQueue = [...wordsData].sort(() => Math.random() - 0.5);
-            renderNextChoice();
-        }
-
-        function renderNextChoice() {
-            if (quizQueue.length === 0) { showFinalResult(); return; }
-            isProcessing = false;
-            const current = quizQueue[0];
-            updateProgress(wordsData.length - quizQueue.length + 1, wordsData.length);
-
-            document.getElementById('choice-question-word').innerText = current.word;
-            document.getElementById('choice-question-pron').innerText = `[${current.pron}]`;
-            document.getElementById('choice-feedback').innerText = "";
-
-            const grid = document.getElementById('choices-grid');
-            grid.innerHTML = '';
-
-            let options = [current.meaning];
-            const others = wordsData.filter(w => w.meaning !== current.meaning);
-            const distractors = others.sort(() => Math.random() - 0.5).slice(0, 3).map(w => w.meaning);
-            options = [...options, ...distractors].sort(() => Math.random() - 0.5);
-
-            options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = "choice-btn";
-                btn.innerText = opt;
-                btn.onclick = () => handleChoice(opt, btn, current.meaning);
-                grid.appendChild(btn);
-            });
-        }
-
-        function handleChoice(selected, btn, correct) {
-            if (isProcessing) return;
-            isProcessing = true;
-
-            if (selected === correct) {
-                btn.classList.add('correct');
-                document.getElementById('choice-feedback').innerText = "빙고! 정답이에요! ✨";
-                document.getElementById('choice-feedback').className = "text-center font-black text-[11px] text-green-500 h-4";
-                quizQueue.shift();
-                setTimeout(renderNextChoice, 1200);
-            } else {
-                btn.classList.add('wrong');
-                document.getElementById('choice-feedback').innerText = "아쉬워요, 다시 도전! 🍬";
-                document.getElementById('choice-feedback').className = "text-center font-black text-[11px] text-red-400 h-4";
-                const item = quizQueue.shift();
-                quizQueue.push(item); 
-                setTimeout(renderNextChoice, 1200);
-            }
-        }
-
-        function showFinalResult() {
-            document.getElementById('study-mode').classList.add('hidden');
-            document.getElementById('quiz-mode').classList.add('hidden');
-            document.getElementById('choice-mode').classList.add('hidden');
-            document.getElementById('result-view').classList.remove('hidden');
-            updateProgress(wordsData.length, wordsData.length);
-        }
-
-        window.onload = () => renderStudyCard();
-    </script>
 </body>
 </html>
