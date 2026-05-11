@@ -10,7 +10,7 @@
         
         body {
             font-family: 'Noto Sans KR', sans-serif;
-            background-color: #f0f2f5;
+            background-color: #f8fafc;
             margin: 0;
             display: flex;
             justify-content: center;
@@ -25,25 +25,26 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
         }
 
-        /* 가독성을 높이기 위한 선명한 텍스트 스타일 */
+        /* 가독성 극대화를 위한 텍스트 스타일 */
         .word-text {
-            color: #1a1a1a;
+            color: #000000;
             font-weight: 900;
-            line-height: 1.2;
+            line-height: 1.1;
+            word-break: break-all;
         }
 
         .meaning-text {
-            color: #2563eb;
-            font-weight: 700;
+            color: #1d4ed8;
+            font-weight: 800;
         }
 
-        /* 카드 플립 애니메이션 */
+        /* 카드 디자인 및 애니메이션 */
         .card-container {
-            perspective: 1000px;
-            height: 350px;
+            perspective: 1500px;
+            height: 400px;
             width: 100%;
         }
 
@@ -52,7 +53,7 @@
             width: 100%;
             height: 100%;
             text-align: center;
-            transition: transform 0.6s;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             transform-style: preserve-3d;
             cursor: pointer;
         }
@@ -70,42 +71,33 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            border: 2px solid #e5e7eb;
-            border-radius: 20px;
+            border: 3px solid #000000; /* 테두리를 더 진하게 */
+            border-radius: 24px;
             background: white;
-            padding: 20px;
+            padding: 30px;
         }
 
         .card-back {
             transform: rotateY(180deg);
-            background-color: #f8fafc;
+            background-color: #f1f5f9;
         }
 
-        /* 버튼 및 인터페이스 */
-        .btn-primary {
-            background-color: #2563eb;
-            color: white;
-            transition: all 0.2s;
-        }
-
-        .btn-primary:active {
-            transform: scale(0.98);
-        }
-
+        /* 인터페이스 요소 */
         .choice-btn {
             width: 100%;
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
             text-align: left;
-            font-weight: 600;
-            font-size: 1.1rem;
+            font-weight: 700;
+            font-size: 1.25rem;
             transition: all 0.2s;
+            color: #334155;
         }
 
-        .choice-btn:hover {
-            background-color: #f3f4f6;
+        .choice-btn:active {
+            transform: scale(0.97);
         }
 
         .choice-btn.correct {
@@ -121,33 +113,34 @@
         }
 
         .letter-tile {
-            width: 45px;
-            height: 45px;
+            min-width: 50px;
+            height: 55px;
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 2px solid #cbd5e1;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 1.2rem;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.5rem;
             background: white;
             cursor: pointer;
+            padding: 0 10px;
         }
 
         .letter-tile.used {
-            opacity: 0.3;
+            opacity: 0.2;
             pointer-events: none;
         }
 
         .answer-slot {
-            width: 35px;
-            height: 45px;
-            border-bottom: 3px solid #3b82f6;
-            margin: 0 4px;
+            width: 40px;
+            height: 55px;
+            border-bottom: 4px solid #2563eb;
+            margin: 0 5px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.5rem;
+            font-size: 2rem;
             font-weight: 900;
             color: #1e40af;
         }
@@ -157,82 +150,78 @@
 
 <div class="main-container">
     <!-- 상단 탭 -->
-    <div class="flex border-b">
-        <button onclick="changeMode('study')" id="tab-study" class="flex-1 py-4 font-bold text-blue-600 border-b-2 border-blue-600">학습하기</button>
-        <button onclick="changeMode('choice')" id="tab-choice" class="flex-1 py-4 font-bold text-gray-500">뜻 선택</button>
-        <button onclick="changeMode('spelling')" id="tab-spelling" class="flex-1 py-4 font-bold text-gray-500">스펠링</button>
+    <div class="flex border-b-2">
+        <button onclick="changeMode('study')" id="tab-study" class="flex-1 py-5 font-black text-blue-700 border-b-4 border-blue-700">학습</button>
+        <button onclick="changeMode('choice')" id="tab-choice" class="flex-1 py-5 font-black text-gray-400">선택</button>
+        <button onclick="changeMode('spelling')" id="tab-spelling" class="flex-1 py-5 font-black text-gray-400">스펠링</button>
     </div>
 
     <!-- 진행률 -->
-    <div class="px-6 pt-6">
-        <div class="flex justify-between text-sm font-bold text-gray-500 mb-2">
+    <div class="px-8 pt-8">
+        <div class="flex justify-between text-base font-black text-gray-600 mb-2">
             <span id="progress-text">1 / 40</span>
             <span id="progress-percent">0%</span>
         </div>
-        <div class="w-full bg-gray-200 rounded-full h-2.5">
-            <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+        <div class="w-full bg-gray-200 rounded-full h-4">
+            <div id="progress-bar" class="bg-blue-600 h-4 rounded-full transition-all duration-300" style="width: 0%"></div>
         </div>
     </div>
 
     <!-- 콘텐츠 영역 -->
-    <div class="flex-1 p-6 flex flex-col justify-center">
+    <div class="flex-1 p-8 flex flex-col justify-center">
         
         <!-- 1. 학습하기 모드 -->
         <div id="mode-study" class="mode-content">
+            <div id="study-count-badge" class="inline-block px-4 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-black mb-4">학습 횟수: 0/3</div>
             <div class="card-container" onclick="toggleFlip()">
                 <div id="flashcard" class="card-inner">
                     <div class="card-front">
-                        <span id="study-pos" class="text-blue-500 font-bold mb-2"></span>
-                        <h2 id="study-word" class="word-text text-5xl mb-4"></h2>
-                        <p id="study-pron" class="text-gray-400 text-xl italic"></p>
-                        <p class="mt-8 text-sm text-gray-300 font-bold">카드를 터치하면 뜻이 보여요!</p>
+                        <span id="study-pos" class="text-blue-600 font-black text-lg mb-4"></span>
+                        <h2 id="study-word" class="word-text text-6xl mb-6"></h2>
+                        <p id="study-pron" class="text-gray-500 text-2xl italic font-medium"></p>
                     </div>
                     <div class="card-back">
-                        <h3 id="study-meaning" class="meaning-text text-4xl mb-6"></h3>
-                        <div class="text-left w-full space-y-2">
-                            <p class="text-gray-600 font-semibold text-center italic" id="study-phrase"></p>
-                            <hr class="my-4">
-                            <p class="text-sm text-gray-500" id="study-def"></p>
-                            <p class="text-xs text-gray-400" id="study-def-kor"></p>
+                        <h3 id="study-meaning" class="meaning-text text-5xl mb-8"></h3>
+                        <div class="text-left w-full space-y-4">
+                            <p class="text-gray-700 font-bold text-center text-xl italic" id="study-phrase"></p>
+                            <div class="h-px bg-gray-300 w-full my-4"></div>
+                            <p class="text-base text-gray-600 leading-tight" id="study-def"></p>
+                            <p class="text-sm text-gray-400 font-bold" id="study-def-kor"></p>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="flex gap-4 mt-8">
-                <button onclick="prevWord()" class="flex-1 py-4 bg-gray-100 rounded-xl font-bold text-gray-600">이전</button>
-                <button onclick="nextWord()" class="flex-1 py-4 btn-primary rounded-xl font-bold">다음 단어</button>
+            <div class="flex gap-4 mt-10">
+                <button onclick="prevWord()" class="flex-1 py-5 bg-gray-100 rounded-2xl font-black text-gray-600 text-lg">이전</button>
+                <button onclick="nextWord()" class="flex-1 py-5 bg-blue-600 text-white rounded-2xl font-black text-lg">다음</button>
             </div>
         </div>
 
         <!-- 2. 뜻 선택 퀴즈 -->
         <div id="mode-choice" class="mode-content hidden">
-            <div class="text-center mb-8">
-                <h2 id="choice-word" class="word-text text-5xl mb-2"></h2>
-                <p id="choice-pron" class="text-gray-400 text-lg"></p>
+            <div class="text-center mb-10">
+                <h2 id="choice-word" class="word-text text-6xl mb-4"></h2>
+                <p id="choice-pron" class="text-gray-400 text-xl"></p>
             </div>
-            <div id="choice-options" class="flex flex-col">
-                <!-- 선택지 버튼이 여기에 생성됨 -->
-            </div>
+            <div id="choice-options" class="flex flex-col"></div>
         </div>
 
         <!-- 3. 스펠링 퀴즈 -->
         <div id="mode-spelling" class="mode-content hidden">
-            <div class="text-center mb-6">
-                <h2 id="spelling-meaning" class="meaning-text text-3xl mb-4"></h2>
-                <div id="spelling-slots" class="flex justify-center flex-wrap mb-8"></div>
+            <div class="text-center mb-8">
+                <h2 id="spelling-meaning" class="meaning-text text-4xl mb-6"></h2>
+                <div id="spelling-slots" class="flex justify-center flex-wrap gap-2 mb-10"></div>
             </div>
-            <div id="spelling-pool" class="flex flex-wrap justify-center gap-2 mb-8"></div>
-            <div class="flex gap-2">
-                <button onclick="resetSpelling()" class="flex-1 py-3 bg-gray-100 rounded-lg font-bold text-gray-500">지우기</button>
-            </div>
+            <div id="spelling-pool" class="flex flex-wrap justify-center gap-3 mb-10"></div>
+            <button onclick="resetSpelling()" class="w-full py-4 bg-gray-100 rounded-xl font-black text-gray-500">초기화</button>
         </div>
 
         <!-- 결과 화면 -->
         <div id="mode-result" class="mode-content hidden text-center">
-            <div class="text-7xl mb-6">🎉</div>
-            <h2 class="text-3xl font-black mb-4">학습 완료!</h2>
-            <p class="text-gray-500 mb-8">Lesson 10의 모든 단어를 마스터했습니다.</p>
-            <button onclick="location.reload()" class="w-full py-4 btn-primary rounded-xl font-bold">다시 학습하기</button>
+            <div class="text-8xl mb-8">⭐</div>
+            <h2 class="text-4xl font-black mb-6">최고예요!</h2>
+            <p class="text-gray-500 text-lg mb-10">오늘의 단어 학습을 성공적으로<br>마쳤습니다.</p>
+            <button onclick="location.reload()" class="w-full py-5 bg-blue-700 text-white rounded-2xl font-black text-xl">다시 시작하기</button>
         </div>
     </div>
 </div>
@@ -282,26 +271,24 @@
     ];
 
     let currentIndex = 0;
+    let flipCount = 0;
     let currentMode = 'study';
-    let quizData = [];
-    let currentAnswer = "";
+    let spellingTyped = "";
 
     function changeMode(mode) {
         currentMode = mode;
-        // 탭 스타일 변경
         document.querySelectorAll('button[id^="tab-"]').forEach(btn => {
-            btn.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
-            btn.classList.add('text-gray-500');
+            btn.classList.remove('text-blue-700', 'border-b-4', 'border-blue-700');
+            btn.classList.add('text-gray-400');
         });
-        document.getElementById(`tab-${mode}`).classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
-        document.getElementById(`tab-${mode}`).classList.remove('text-gray-500');
+        document.getElementById(`tab-${mode}`).classList.add('text-blue-700', 'border-b-4', 'border-blue-700');
+        document.getElementById(`tab-${mode}`).classList.remove('text-gray-400');
 
-        // 콘텐츠 표시
-        document.querySelectorAll('.mode-content').forEach(content => content.classList.add('hidden'));
+        document.querySelectorAll('.mode-content').forEach(c => c.classList.add('hidden'));
         document.getElementById(`mode-${mode}`).classList.remove('hidden');
 
-        // 모드별 초기화
         currentIndex = 0;
+        flipCount = 0;
         if (mode === 'study') initStudy();
         else if (mode === 'choice') initChoice();
         else if (mode === 'spelling') initSpelling();
@@ -316,9 +303,10 @@
         document.getElementById('progress-bar').style.width = `${percent}%`;
     }
 
-    /* --- 학습하기 로직 --- */
     function initStudy() {
         const word = words[currentIndex];
+        flipCount = 0;
+        updateFlipCountUI();
         document.getElementById('flashcard').classList.remove('is-flipped');
         document.getElementById('study-word').innerText = word.word;
         document.getElementById('study-pron').innerText = `[${word.pron}]`;
@@ -330,14 +318,30 @@
         updateProgress();
     }
 
+    function updateFlipCountUI() {
+        document.getElementById('study-count-badge').innerText = `학습 횟수: ${flipCount}/3`;
+    }
+
     function toggleFlip() {
-        document.getElementById('flashcard').classList.toggle('is-flipped');
+        const card = document.getElementById('flashcard');
+        const isFlipped = card.classList.contains('is-flipped');
+        card.classList.toggle('is-flipped');
+
+        if (!isFlipped) {
+            flipCount++;
+            updateFlipCountUI();
+            if (flipCount >= 3) {
+                setTimeout(() => { nextWord(); }, 1000);
+            }
+        }
     }
 
     function nextWord() {
         if (currentIndex < words.length - 1) {
             currentIndex++;
-            initStudy();
+            if (currentMode === 'study') initStudy();
+            else if (currentMode === 'choice') initChoice();
+            else if (currentMode === 'spelling') initSpelling();
         } else {
             showResult();
         }
@@ -346,50 +350,43 @@
     function prevWord() {
         if (currentIndex > 0) {
             currentIndex--;
-            initStudy();
+            if (currentMode === 'study') initStudy();
+            else if (currentMode === 'choice') initChoice();
+            else if (currentMode === 'spelling') initSpelling();
         }
     }
 
-    /* --- 뜻 선택 로직 --- */
     function initChoice() {
         updateProgress();
         const word = words[currentIndex];
         document.getElementById('choice-word').innerText = word.word;
         document.getElementById('choice-pron').innerText = `[${word.pron}]`;
         
-        const optionsContainer = document.getElementById('choice-options');
-        optionsContainer.innerHTML = '';
-
-        let choices = [word.meaning];
-        while (choices.length < 4) {
-            let randomMeaning = words[Math.floor(Math.random() * words.length)].meaning;
-            if (!choices.includes(randomMeaning)) choices.push(randomMeaning);
+        const options = [word.meaning];
+        while (options.length < 4) {
+            let r = words[Math.floor(Math.random() * words.length)].meaning;
+            if (!options.includes(r)) options.push(r);
         }
-        choices.sort(() => Math.random() - 0.5);
+        options.sort(() => Math.random() - 0.5);
 
-        choices.forEach(choice => {
+        const container = document.getElementById('choice-options');
+        container.innerHTML = '';
+        options.forEach(opt => {
             const btn = document.createElement('button');
-            btn.className = "choice-btn";
-            btn.innerText = choice;
+            btn.className = "choice-btn shadow-sm";
+            btn.innerText = opt;
             btn.onclick = () => {
-                if (choice === word.meaning) {
+                if (opt === word.meaning) {
                     btn.classList.add('correct');
-                    setTimeout(() => {
-                        if (currentIndex < words.length - 1) {
-                            currentIndex++;
-                            initChoice();
-                        } else showResult();
-                    }, 600);
+                    setTimeout(nextWord, 500);
                 } else {
                     btn.classList.add('wrong');
                 }
             };
-            optionsContainer.appendChild(btn);
+            container.appendChild(btn);
         });
     }
 
-    /* --- 스펠링 로직 --- */
-    let spellingTyped = "";
     function initSpelling() {
         updateProgress();
         const word = words[currentIndex];
@@ -407,26 +404,20 @@
         const pool = document.getElementById('spelling-pool');
         pool.innerHTML = '';
         const letters = word.word.split('').sort(() => Math.random() - 0.5);
-        letters.forEach((char, idx) => {
+        letters.forEach(char => {
             const tile = document.createElement('div');
-            tile.className = "letter-tile shadow-sm";
+            tile.className = "letter-tile shadow-md";
             tile.innerText = char;
             tile.onclick = () => {
                 if (tile.classList.contains('used')) return;
                 tile.classList.add('used');
-                const nextSlot = slots.children[spellingTyped.length];
-                nextSlot.innerText = char;
+                slots.children[spellingTyped.length].innerText = char;
                 spellingTyped += char;
 
                 if (spellingTyped === word.word) {
-                    setTimeout(() => {
-                        if (currentIndex < words.length - 1) {
-                            currentIndex++;
-                            initSpelling();
-                        } else showResult();
-                    }, 600);
+                    setTimeout(nextWord, 500);
                 } else if (spellingTyped.length === word.word.length) {
-                    setTimeout(resetSpelling, 600);
+                    setTimeout(resetSpelling, 500);
                 }
             };
             pool.appendChild(tile);
@@ -435,10 +426,8 @@
 
     function resetSpelling() {
         spellingTyped = "";
-        const slots = document.getElementById('spelling-slots');
-        Array.from(slots.children).forEach(s => s.innerText = "");
-        const pool = document.getElementById('spelling-pool');
-        Array.from(pool.children).forEach(t => t.classList.remove('used'));
+        Array.from(document.getElementById('spelling-slots').children).forEach(s => s.innerText = "");
+        Array.from(document.getElementById('spelling-pool').children).forEach(t => t.classList.remove('used'));
     }
 
     function showResult() {
@@ -446,9 +435,7 @@
         document.getElementById('mode-result').classList.remove('hidden');
     }
 
-    // 초기 실행
     window.onload = initStudy;
 </script>
-
 </body>
 </html>
